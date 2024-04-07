@@ -18,27 +18,27 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainTabStackParamList } from './config/interface';
 import { route } from './routes';
 import TabBar from './Navigator/TabBar';
-import LoginStackNavigator from './Navigator/LoginStackNavigator';
+import UserStackNavigator from './Navigator/LoginStackNavigator';
 import ProductStackNavigator from './Navigator/ProductStackNavigator';
 import ShopStackNavigator from './Navigator/ShopStackNavigator';
 import InvoiceStackNavigator from './Navigator/InvoiceStackNavigator';
+import SearchBar from './Components/Common/SearchBar';
+
 
 
 const mainTabNavigator = createBottomTabNavigator<MainTabStackParamList>();
 
 
-// main - bottom navigator
-// nested - 3 stack navigator (login/register, home/product-detail, cart/checkout)
 
 function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.container}>
 
-
-
       <NavigationContainer>
 
-        <mainTabNavigator.Navigator backBehavior='history' screenOptions={{ unmountOnBlur: true }} tabBar={TabBar}>
+        <SearchBar />
+
+        <mainTabNavigator.Navigator backBehavior='history' screenOptions={{ unmountOnBlur: true, headerShown: false }} tabBar={TabBar}>
 
           {/* home and product detail */}
           <mainTabNavigator.Screen name={route.home.index} options={{ title: "Home" }}
@@ -57,7 +57,7 @@ function App(): React.JSX.Element {
 
           {/* login and register */}
           <mainTabNavigator.Screen name={route.users.index} options={{ title: "Login" }}
-            children={(props) => <LoginStackNavigator {...props} />} />
+            children={(props) => <UserStackNavigator {...props} />} />
 
 
         </mainTabNavigator.Navigator>

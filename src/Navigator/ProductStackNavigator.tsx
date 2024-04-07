@@ -11,7 +11,7 @@ const productStackNavigator = createNativeStackNavigator<ProductStackParamList>(
 const ProductStackNavigator: React.FC<BottomTabScreenProps<MainTabStackParamList, "home">> =
     ({ route: routeProp, navigation }) => {
         return (
-            <productStackNavigator.Navigator initialRouteName={route.home.productList}>
+            <productStackNavigator.Navigator initialRouteName={route.home.productList} screenOptions={{ headerShown: false }}>
                 <productStackNavigator.Screen name={route.home.productList} component={HomeScreen} />
                 <productStackNavigator.Screen name={route.home.productDetail} component={ProductDetail} />
             </productStackNavigator.Navigator>
