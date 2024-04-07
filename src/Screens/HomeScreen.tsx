@@ -1,11 +1,20 @@
-import { Text } from "react-native";
+import { StyleSheet, View } from "react-native";
+import Banner from "../Components/Home/Banner";
 
 const HomeScreen = () => {
     return (
-        <Text>
-            Home
-        </Text>
+        <View style={styles.page_layout}>
+            <Banner />
+        </View>
     );
 }
+
+
+const styles = StyleSheet.create({
+    page_layout: {
+        paddingHorizontal: 10,
+        paddingVertical: 10
+    }
+})
 
 export default HomeScreen;

@@ -1,7 +1,7 @@
 import * as React from "react";
 import Svg, { Path, SvgProps } from "react-native-svg";
 
-function Close(props: SvgProps) {
+function Clear(props: SvgProps) {
     return (
         <Svg viewBox="0 0 32 32" width="1em" height="1em" {...props}>
             <Path
@@ -15,5 +15,5 @@ function Close(props: SvgProps) {
     );
 }
 
-const CloseIcon = React.memo(Close);
-export default CloseIcon;
+const ClearIcon = React.memo(Clear);
+export default ClearIcon;

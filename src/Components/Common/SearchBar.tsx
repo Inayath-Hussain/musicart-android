@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { Image, StyleSheet, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { colors } from "../../config/color";
-import CloseIcon from "../Icons/Close";
+import ClearIcon from "../Icons/Clear";
 
 
 const SearchBar = () => {
@@ -46,7 +46,7 @@ const SearchBar = () => {
                     value &&
                     // clear icon
                     <TouchableWithoutFeedback onPress={() => setValue("")}>
-                        <CloseIcon width={25} height={25} />
+                        <ClearIcon width={25} height={25} />
                     </TouchableWithoutFeedback>
                 }
 

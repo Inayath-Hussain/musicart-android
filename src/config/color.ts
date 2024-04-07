@@ -3,5 +3,6 @@ export const colors = {
     secondaryColor: "#FFD600",
     errorColor: "#FF0000",
 
-    white: "#ffffff"
+    white: "#ffffff",
+    black: "#000000"
 }
