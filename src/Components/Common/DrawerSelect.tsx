@@ -1,6 +1,7 @@
-import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { StyleSheet, View, ViewStyle } from "react-native";
 import { DropdownSelect } from "react-native-input-select";
 import { colors } from "../../config/color";
+import { fonts } from "../../config/fonts";
 
 
 export interface ICustomSelectoption {
@@ -46,6 +47,7 @@ const DrawerSelect: React.FC<ICustomSelectProps> = ({ options, defaultText, hand
                     itemSeparatorStyle: styles.optionSeparator,
                 }}
 
+                placeholderStyle={styles.placeholder}
 
                 primaryColor={colors.blue}
 
@@ -82,6 +84,10 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
 
+
+    placeholder: {
+        fontFamily: fonts.roboto
+    },
 
     select: {
         columnGap: 10,

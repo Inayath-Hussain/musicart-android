@@ -1,12 +1,14 @@
 import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
+import RobotoText from "../Components/Common/Roboto/Text";
 import HomeIcon from "../Components/Icons/Home";
 import CartIcon from "../Components/Icons/Cart";
 import InvoiceIcon from "../Components/Icons/Invoice";
 import LoginIcon from "../Components/Icons/Login";
 import { colors } from "../config/color";
 import { route } from "../routes";
+
 
 
 
@@ -86,7 +88,7 @@ const TabBar: React.FC<BottomTabBarProps> = ({ descriptors, insets, navigation, 
 
                     <View style={[styles.link, d.index === state.index ? styles.linkActive : {}]}>
                         {d.Icon}
-                        <Text style={styles.linkText}>{d.label}</Text>
+                        <RobotoText style={styles.linkText}>{d.label}</RobotoText>
                     </View>
 
                 </TouchableWithoutFeedback>
@@ -127,6 +129,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 4,
         borderTopColor: colors.white,
 
+
         minWidth: 50
     },
 
@@ -136,7 +139,8 @@ const styles = StyleSheet.create({
 
     linkText: {
         fontWeight: "600",
-        fontSize: 16
+        fontSize: 16,
+        color: colors.black,
     }
 })
 

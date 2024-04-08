@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { Image, StyleSheet, TextInput, TouchableWithoutFeedback, View } from "react-native";
 import { colors } from "../../config/color";
 import ClearIcon from "../Icons/Clear";
+import { fonts } from "../../config/fonts";
 
 
 const SearchBar = () => {
@@ -86,7 +87,9 @@ const styles = StyleSheet.create({
         paddingRight: 10,
         backgroundColor: colors.white,
 
-        flex: 1
+        flex: 1,
+
+        fontFamily: fonts.roboto
     },
 
 

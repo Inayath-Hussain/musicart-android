@@ -1,20 +1,23 @@
 import { Image, StyleSheet, Text } from "react-native";
 import LinearGradient from "react-native-linear-gradient"
+
+import RobotoText from "../Common/Roboto/Text";
 import { colors } from "../../config/color";
+
 
 const Banner = () => {
     return (
         <LinearGradient style={styles.container}
             start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} colors={["#7286B4", "#E794CE"]} >
 
-            <Text style={styles.mainText}>
+            <RobotoText style={styles.mainText}>
                 Grab upto 50% off on{"\n"}
                 Selected headphones
-            </Text>
+            </RobotoText>
 
-            <Text style={styles.secondaryText}>
+            <RobotoText style={styles.secondaryText}>
                 Buy Now
-            </Text>
+            </RobotoText>
 
             <Image source={require("../../assets/images/banner.png")}
                 style={styles.image} />
@@ -51,7 +54,7 @@ const styles = StyleSheet.create({
 
     mainText: {
         color: colors.primaryColor,
-        fontWeight: "600",
+        fontWeight: "700",
         fontSize: 22,
 
         marginBottom: 15
