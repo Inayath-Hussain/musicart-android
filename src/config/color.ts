@@ -4,5 +4,6 @@ export const colors = {
     errorColor: "#FF0000",
 
     white: "#ffffff",
-    black: "#000000"
+    black: "#000000",
+    blue: "#0066FF"
 }

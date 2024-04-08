@@ -1,10 +1,17 @@
 import { StyleSheet, View } from "react-native";
 import Banner from "../Components/Home/Banner";
+import SortAndFilter from "../Components/Home/SortAndFilter";
+
+
 
 const HomeScreen = () => {
+
     return (
         <View style={styles.page_layout}>
             <Banner />
+
+            <SortAndFilter />
+
         </View>
     );
 }
