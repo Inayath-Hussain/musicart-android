@@ -11,6 +11,7 @@ import {
   SafeAreaView, StyleSheet,
 } from 'react-native';
 
+import { useSelector } from 'react-redux';
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -23,6 +24,8 @@ import ProductStackNavigator from './Navigator/ProductStackNavigator';
 import ShopStackNavigator from './Navigator/ShopStackNavigator';
 import InvoiceStackNavigator from './Navigator/InvoiceStackNavigator';
 import SearchBar from './Components/Common/SearchBar';
+import { useGetProductsMutation } from './store/slices/productApi';
+import { productQuerySelector } from './store/slices/productQuery';
 
 
 
@@ -31,6 +34,12 @@ const mainTabNavigator = createBottomTabNavigator<MainTabStackParamList>();
 
 
 function App(): React.JSX.Element {
+
+  const { queryString } = useSelector(productQuerySelector);
+  // useGetProductsMutation({fixedCacheKey: queryString});
+
+  console.log(__DEV__)
+
   return (
     <SafeAreaView style={styles.container}>
 

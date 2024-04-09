@@ -1,4 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
+
 import { productQuerySlice } from "./slices/productQuery";
 import { productsApi } from "./slices/productApi";
 import { productView } from "./slices/productView";
@@ -19,6 +20,10 @@ export const store = configureStore({
     middleware(getDefaultMiddleware) {
         return getDefaultMiddleware().concat(productsApi.middleware)
     },
+
+    enhancers: (defaultEnhancers) => __DEV__ ?
+        defaultEnhancers().prepend(require("../../ReactotronConfig").reactotron.createEnhancer())
+        : defaultEnhancers()
 })
 
 
