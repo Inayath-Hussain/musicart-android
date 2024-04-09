@@ -1,8 +1,8 @@
-import { Image, StyleSheet, Text } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import LinearGradient from "react-native-linear-gradient"
 
 import RobotoText from "../Common/Roboto/Text";
-import { colors } from "../../config/color";
+import { colors } from "@src/config/color";
 
 
 const Banner = () => {
@@ -19,7 +19,7 @@ const Banner = () => {
                 Buy Now
             </RobotoText>
 
-            <Image source={require("../../assets/images/banner.png")}
+            <Image source={require("@src/assets/images/banner.png")}
                 style={styles.image} />
 
         </LinearGradient>
