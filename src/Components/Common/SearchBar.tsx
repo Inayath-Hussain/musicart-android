@@ -1,43 +1,24 @@
-import { MutableRefObject, forwardRef, useEffect, useRef, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Image, StyleSheet, TextInput, TouchableWithoutFeedback, View } from "react-native";
-import { NavigationContainerRef, Route, createNavigationContainerRef } from "@react-navigation/native";
 
 import { colors } from "../../config/color";
 import ClearIcon from "../Icons/Clear";
 import { fonts } from "../../config/fonts";
 import { productQuerySelector, updateProductQuery } from "@src/store/slices/productQuery";
 import { route } from "@src/routes";
-import { MainTabStackParamList } from "@src/config/interface";
+import { navigationContext } from "@src/contexts/navigationContext";
 
 
-interface Iprops {
-    navigationRef: NavigationContainerRef<MainTabStackParamList> | null
-}
 
 
-const SearchBar: React.FC<Iprops> = ({ navigationRef }) => {
+const SearchBar = () => {
 
-    const [currentRoute, setCurrentRoute] = useState<string | Route<string>>(route.home.index);
+    const { navigationRef, currentRoute } = useContext(navigationContext);
 
     // local input state variable, used to provide input clear option
     const [value, setValue] = useState("");
 
-    useEffect(() => {
-
-        const getCurrentRoute = () => {
-            console.log(navigationRef?.getCurrentRoute())
-
-            setCurrentRoute(navigationRef?.getCurrentRoute()?.name || "")
-        }
-
-        // navigationRef.addListener("ready", () => console.log("ready"))
-        navigationRef && navigationRef.addListener("state", getCurrentRoute)
-
-        return () => {
-            navigationRef && navigationRef.removeListener("state", getCurrentRoute)
-        }
-    }, [navigationRef]);
 
     // used to track focus status of input
     const [inputFocused, setInputFocused] = useState(false);

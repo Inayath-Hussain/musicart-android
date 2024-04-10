@@ -1,12 +1,18 @@
 import { Provider } from "react-redux";
+
 import App from "./App";
 import { store } from "./store";
+import NavigationContextProvider from "./contexts/navigationContext";
 
 function Main(): React.JSX.Element {
     return (
-        <Provider store={store}>
-            <App />
-        </Provider>
+        <NavigationContextProvider>
+            <Provider store={store}>
+
+                <App />
+
+            </Provider>
+        </NavigationContextProvider>
     )
 }
 

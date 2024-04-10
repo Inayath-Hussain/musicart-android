@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 
 import {
   SafeAreaView, StyleSheet,
@@ -26,6 +26,8 @@ import InvoiceStackNavigator from './Navigator/InvoiceStackNavigator';
 import SearchBar from './Components/Common/SearchBar';
 import { useGetProductsQuery } from './store/slices/productApi';
 import { productQuerySelector } from './store/slices/productQuery';
+import Header from './Components/Common/Header';
+import { navigationContext } from './contexts/navigationContext';
 
 
 
@@ -35,21 +37,21 @@ const mainTabNavigator = createBottomTabNavigator<MainTabStackParamList>();
 
 function App(): React.JSX.Element {
 
-  // used to re-render navigation container, to get access to it's ref in searchbar
-  const [rerender, setRerender] = useState(false);
+  const { setNavigationRef } = useContext(navigationContext);
 
   const navigationContainerRef = useRef<NavigationContainerRef<MainTabStackParamList> | null>(null);
 
   const { queryString } = useSelector(productQuerySelector);
-  const { data } = useGetProductsQuery(queryString, { refetchOnMountOrArgChange: true });
+  useGetProductsQuery(queryString, { refetchOnMountOrArgChange: true });
+
 
 
   return (
     <SafeAreaView style={styles.container}>
 
-      <NavigationContainer onReady={() => setRerender(prev => !prev)} ref={navigationContainerRef}>
+      <NavigationContainer onReady={() => setNavigationRef(navigationContainerRef.current)} ref={navigationContainerRef}>
 
-        <SearchBar navigationRef={navigationContainerRef.current} />
+        <Header />
 
         <mainTabNavigator.Navigator backBehavior='history' screenOptions={{ unmountOnBlur: true, headerShown: false }} tabBar={TabBar}>
 
