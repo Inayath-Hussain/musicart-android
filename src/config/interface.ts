@@ -1,3 +1,4 @@
+import { NavigatorScreenParams } from "@react-navigation/native"
 import { route } from "../routes"
 
 export type LoginStackParamList = {
@@ -7,8 +8,8 @@ export type LoginStackParamList = {
 
 
 export type ProductStackParamList = {
-    [route.home.productList]: undefined
     [route.home.productDetail]: { id: string }
+    [route.home.productList]: undefined
 }
 
 
@@ -26,7 +27,8 @@ export type InvoiceStackParamList = {
 
 
 export type MainTabStackParamList = {
-    [route.home.index]: undefined
+    // specifying screen params is required to be able to navigate to nested screen
+    [route.home.index]: NavigatorScreenParams<ProductStackParamList>
     [route.shop.index]: undefined
     [route.invoices.index]: undefined
     [route.users.index]: undefined

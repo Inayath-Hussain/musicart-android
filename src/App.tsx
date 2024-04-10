@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useRef, useState } from 'react';
 
 import {
   SafeAreaView, StyleSheet,
@@ -13,7 +13,7 @@ import {
 
 import { useSelector } from 'react-redux';
 
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { MainTabStackParamList } from './config/interface';
@@ -24,7 +24,7 @@ import ProductStackNavigator from './Navigator/ProductStackNavigator';
 import ShopStackNavigator from './Navigator/ShopStackNavigator';
 import InvoiceStackNavigator from './Navigator/InvoiceStackNavigator';
 import SearchBar from './Components/Common/SearchBar';
-import { useGetProductsMutation } from './store/slices/productApi';
+import { useGetProductsQuery } from './store/slices/productApi';
 import { productQuerySelector } from './store/slices/productQuery';
 
 
@@ -35,17 +35,21 @@ const mainTabNavigator = createBottomTabNavigator<MainTabStackParamList>();
 
 function App(): React.JSX.Element {
 
-  const { queryString } = useSelector(productQuerySelector);
-  // useGetProductsMutation({fixedCacheKey: queryString});
+  // used to re-render navigation container, to get access to it's ref in searchbar
+  const [rerender, setRerender] = useState(false);
 
-  console.log(__DEV__)
+  const navigationContainerRef = useRef<NavigationContainerRef<MainTabStackParamList> | null>(null);
+
+  const { queryString } = useSelector(productQuerySelector);
+  const { data } = useGetProductsQuery(queryString, { refetchOnMountOrArgChange: true });
+
 
   return (
     <SafeAreaView style={styles.container}>
 
-      <NavigationContainer>
+      <NavigationContainer onReady={() => setRerender(prev => !prev)} ref={navigationContainerRef}>
 
-        <SearchBar />
+        <SearchBar navigationRef={navigationContainerRef.current} />
 
         <mainTabNavigator.Navigator backBehavior='history' screenOptions={{ unmountOnBlur: true, headerShown: false }} tabBar={TabBar}>
 

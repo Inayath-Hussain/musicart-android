@@ -37,11 +37,17 @@ export const productsApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: baseURL, credentials: "include" }),
 
     endpoints: (builder) => ({
-        getProducts: builder.mutation<{ data: IProductData[] }, string>({ query: (queryString = "") => ({ url: `${apiURLs.getProducts}?${queryString}` }) })
+        getProducts: builder.query<IProductData[], string>({
+            query: (queryString = "") => ({ url: `${apiURLs.getProducts}?${queryString}` }),
+
+            transformResponse(baseQueryReturnValue: { data: IProductData[] }, meta, arg) {
+                return baseQueryReturnValue.data
+            },
+        })
     })
 })
 
 
 
 
-export const { useGetProductsMutation } = productsApi;
+export const { useGetProductsQuery } = productsApi;

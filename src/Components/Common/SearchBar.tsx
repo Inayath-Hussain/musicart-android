@@ -1,20 +1,72 @@
-import { useRef, useState } from "react";
+import { MutableRefObject, forwardRef, useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Image, StyleSheet, TextInput, TouchableWithoutFeedback, View } from "react-native";
+import { NavigationContainerRef, Route, createNavigationContainerRef } from "@react-navigation/native";
+
 import { colors } from "../../config/color";
 import ClearIcon from "../Icons/Clear";
 import { fonts } from "../../config/fonts";
+import { productQuerySelector, updateProductQuery } from "@src/store/slices/productQuery";
+import { route } from "@src/routes";
+import { MainTabStackParamList } from "@src/config/interface";
 
 
-const SearchBar = () => {
+interface Iprops {
+    navigationRef: NavigationContainerRef<MainTabStackParamList> | null
+}
 
-    // input value
+
+const SearchBar: React.FC<Iprops> = ({ navigationRef }) => {
+
+    const [currentRoute, setCurrentRoute] = useState<string | Route<string>>(route.home.index);
+
+    // local input state variable, used to provide input clear option
     const [value, setValue] = useState("");
+
+    useEffect(() => {
+
+        const getCurrentRoute = () => {
+            console.log(navigationRef?.getCurrentRoute())
+
+            setCurrentRoute(navigationRef?.getCurrentRoute()?.name || "")
+        }
+
+        // navigationRef.addListener("ready", () => console.log("ready"))
+        navigationRef && navigationRef.addListener("state", getCurrentRoute)
+
+        return () => {
+            navigationRef && navigationRef.removeListener("state", getCurrentRoute)
+        }
+    }, [navigationRef]);
 
     // used to track focus status of input
     const [inputFocused, setInputFocused] = useState(false);
 
     // used to focus and blur when respective buttons are pressed
     const inputRef = useRef<TextInput | null>(null);
+
+    // const { name, path, params } = useRoute();
+
+    const { queryString } = useSelector(productQuerySelector)
+    const dispatch = useDispatch();
+
+
+    const timeOutRef = useRef<NodeJS.Timeout>();
+
+    // debounce function to minimize sending api requests
+    const handleChange = (value: string) => {
+
+        setValue(value)
+        clearTimeout(timeOutRef.current)
+
+        timeOutRef.current = setTimeout(() => {
+            dispatch(updateProductQuery({ key: "name", value: value }))
+
+            // in mobile device when user's use search bar from other pages such as cart then user is navigated to products list page
+            if (currentRoute !== route.home.productList) navigationRef?.navigate(route.home.index, { screen: "product-list" })
+        }, 900)
+    }
+
 
 
     return (
@@ -37,7 +89,7 @@ const SearchBar = () => {
                         </TouchableWithoutFeedback>
                 }
 
-                <TextInput ref={inputRef} value={value} onChangeText={e => setValue(e)}
+                <TextInput ref={inputRef} value={value} onChangeText={value => handleChange(value)}
                     onFocus={() => setInputFocused(true)} onBlur={() => setInputFocused(false)}
                     autoFocus={false} placeholder="Search Musicart" placeholderTextColor={"#909090"}
                     style={styles.input} />
@@ -46,7 +98,7 @@ const SearchBar = () => {
                 {
                     value &&
                     // clear icon
-                    <TouchableWithoutFeedback onPress={() => setValue("")}>
+                    <TouchableWithoutFeedback onPress={() => handleChange("")}>
                         <ClearIcon width={25} height={25} />
                     </TouchableWithoutFeedback>
                 }

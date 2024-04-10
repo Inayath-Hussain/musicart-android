@@ -27,13 +27,16 @@ const DrawerSelect: React.FC<ICustomSelectProps> = ({ options, defaultText, hand
             <DropdownSelect
                 placeholder={defaultText}
                 options={
-                    Object.keys(options).map(o => ({ data: o, title: options[o] }))
+                    [
+                        { title: "Featured", data: "featured" },
+                        ...Object.keys(options).map(o => ({ data: o, title: options[o] }))
+                    ]
                 }
                 optionLabel="title"
                 optionValue="data"
 
                 selectedValue={value}
-                onValueChange={(value: string) => handleChange(value)}
+                onValueChange={(value: string) => handleChange(value === "featured" ? "" : value)}
 
                 dropdownStyle={{ ...styles.select, ...style }}
                 selectedItemStyle={styles.displayValue}

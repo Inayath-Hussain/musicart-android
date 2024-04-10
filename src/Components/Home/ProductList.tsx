@@ -1,7 +1,15 @@
-import { FlatList, Image, StyleSheet, Text, View, useWindowDimensions } from "react-native";
+import { FlatList, Image, StyleSheet, View, TouchableWithoutFeedback, useWindowDimensions } from "react-native";
 
 import RobotoText from "../Common/Roboto/Text";
 import { capitalize } from "@src/utilities/capitalize";
+import { CompositeNavigationProp, useNavigation, } from "@react-navigation/native";
+import { route } from "@src/routes";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { MainTabStackParamList, ProductStackParamList } from "@src/config/interface";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useGetProductsQuery } from "@src/store/slices/productApi";
+import { useSelector } from "react-redux";
+import { productQuerySelector } from "@src/store/slices/productQuery";
 
 
 interface Idata {
@@ -15,34 +23,10 @@ interface Idata {
 
 const ProductList = () => {
 
-    const data: Idata[] = [
-        {
-            _id: "a",
-            name: "boAt Rockerz 551ANC",
-            color: "Stellar black",
-            headphone_type: "on-ear",
-            price: 5999,
-            main_image: "https://firebasestorage.googleapis.com/v0/b/music-cart-3af3b.appspot.com/o/Products%2FboAt%20Rockerz%20551ANC%2FboAt%20Rockerz%20551ANC.webp_1711607331508.webp?alt=media&token=e8ea863c-021a-4770-82d2-bf39eb65e679"
-        },
+    const { queryString } = useSelector(productQuerySelector);
 
-        {
-            _id: "b",
-            name: "Sony Wh-Ch 520",
-            color: "black",
-            headphone_type: "on-ear",
-            price: 5999,
-            main_image: "https://firebasestorage.googleapis.com/v0/b/music-cart-3af3b.appspot.com/o/Products%2FSony%20Wh-Ch510%2FSony%20Wh-Ch510.webp_1711601748365.webp?alt=media&token=3b935684-9278-444c-a15b-1f0b916dcac3"
-        },
-        {
-            _id: "c",
-            name: "Wony Sh-Ch 520 onoub8tcu hibv iovu vbiuh",
-            color: "black",
-            headphone_type: "on-ear",
-            price: 5999,
-            main_image: "https://firebasestorage.googleapis.com/v0/b/music-cart-3af3b.appspot.com/o/Products%2FSony%20Wh-Ch510%2FSony%20Wh-Ch510.webp_1711601748365.webp?alt=media&token=3b935684-9278-444c-a15b-1f0b916dcac3"
-        }
+    const { data } = useGetProductsQuery(queryString, { refetchOnMountOrArgChange: true })
 
-    ]
 
 
     return (
@@ -96,31 +80,34 @@ export default ProductList;
 
 
 
-const Card: React.FC<Idata> = ({ main_image, name, price, color, headphone_type }) => {
+const Card: React.FC<Idata> = ({ main_image, name, price, color, headphone_type, _id }) => {
 
     const { width } = useWindowDimensions();
+
+    const { navigate } = useNavigation<BottomTabNavigationProp<MainTabStackParamList>>();
+
+    const handlePress = () => navigate(route.home.index, { screen: "product-detail", params: { id: _id } })
 
     const formattedPrice = Intl.NumberFormat("en-In").format(price)
 
     return (
-        <View style={[cardStyles.layout, { width: width / 2 - 10 }]}>
+        <View style={[cardStyles.layout, { width: (width / 2) - 10 }]}>
 
-            {/* card */}
-            <View style={cardStyles.card}>
 
-                {/* image container */}
-                <View style={cardStyles.imageContainer}>
-                    <Image src={main_image} style={cardStyles.image} />
+            <TouchableWithoutFeedback onPress={handlePress}>
+                {/* card */}
+                <View style={cardStyles.card}>
+                    {/* image container */}
+                    <View style={cardStyles.imageContainer}>
+                        <Image src={main_image} style={cardStyles.image} />
+                    </View>
+                    <View style={cardStyles.textContainer}>
+                        <RobotoText numberOfLines={2} style={cardStyles.name}>{name}</RobotoText>
+                        <RobotoText>Price - &#8377; {formattedPrice}</RobotoText>
+                        <RobotoText numberOfLines={2}>{capitalize(color)} | {capitalize(headphone_type)} headphone</RobotoText>
+                    </View>
                 </View>
-
-
-                <View style={cardStyles.textContainer}>
-                    <RobotoText numberOfLines={2} style={cardStyles.name}>{name}</RobotoText>
-                    <RobotoText>Price - &#8377; {formattedPrice}</RobotoText>
-                    <RobotoText>{capitalize(color)} | {capitalize(headphone_type)} headphone</RobotoText>
-                </View>
-
-            </View>
+            </TouchableWithoutFeedback>
 
         </View>
     )
@@ -133,14 +120,15 @@ const cardStyles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#CECECE",
         borderRadius: 6,
-        height: 240
+        height: 240,
+        minWidth: 180
     },
 
     image: {
         maxWidth: 120,
         maxHeight: 120,
-        minWidth: 100,
-        minHeight: 80,
+        minWidth: 110,
+        minHeight: 90,
         objectFit: "contain"
     },
 
