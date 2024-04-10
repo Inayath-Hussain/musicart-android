@@ -1,18 +1,21 @@
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import Banner from "../Components/Home/Banner";
 import SortAndFilter from "../Components/Home/SortAndFilter";
+import ProductList from "@src/Components/Home/ProductList";
 
 
 
 const HomeScreen = () => {
 
     return (
-        <View style={styles.page_layout}>
+        <ScrollView style={styles.page_layout}>
             <Banner />
 
             <SortAndFilter />
 
-        </View>
+            <ProductList />
+
+        </ScrollView>
     );
 }
 
@@ -20,7 +23,8 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
     page_layout: {
         paddingHorizontal: 10,
-        paddingVertical: 10
+        paddingVertical: 10,
+        // flex: 1
     }
 })
 

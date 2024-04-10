@@ -105,8 +105,6 @@ const TabBar: React.FC<BottomTabBarProps> = ({ descriptors, insets, navigation, 
 
 const styles = StyleSheet.create({
     container: {
-        position: "absolute",
-        bottom: 0,
         backgroundColor: "#fff",
         width: "100%",
 
