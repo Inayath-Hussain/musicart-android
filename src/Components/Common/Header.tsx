@@ -1,18 +1,17 @@
-import { NavigationContainerRef, Route } from "@react-navigation/native";
+import { useContext } from "react";
 import { Image, StyleSheet, View } from "react-native";
+import { Route } from "@react-navigation/native";
 
-import { MainTabStackParamList } from "@src/config/interface";
 import { route } from "@src/routes";
 import SearchBar from "./SearchBar";
 import { colors } from "@src/config/color";
 import RobotoText from "./Roboto/Text";
-import { useContext, useEffect, useState } from "react";
 import { navigationContext } from "@src/contexts/navigationContext";
 
 
 const Header = () => {
 
-    const { currentRoute } = useContext(navigationContext)
+    const { currentRoute } = useContext(navigationContext);
 
     const searchbarRoutes: (Route<string> | string)[] = [
         route.home.productList,

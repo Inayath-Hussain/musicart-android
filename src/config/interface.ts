@@ -31,5 +31,5 @@ export type MainTabStackParamList = {
     [route.home.index]: NavigatorScreenParams<ProductStackParamList>
     [route.shop.index]: undefined
     [route.invoices.index]: undefined
-    [route.users.index]: undefined
+    [route.users.index]: NavigatorScreenParams<LoginStackParamList>
 }

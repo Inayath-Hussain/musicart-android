@@ -19,7 +19,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MainTabStackParamList } from './config/interface';
 import { route } from './routes';
 import TabBar from './Navigator/TabBar';
-import UserStackNavigator from './Navigator/LoginStackNavigator';
+import UserStackNavigator from './Navigator/UserStackNavigator';
 import ProductStackNavigator from './Navigator/ProductStackNavigator';
 import ShopStackNavigator from './Navigator/ShopStackNavigator';
 import InvoiceStackNavigator from './Navigator/InvoiceStackNavigator';
