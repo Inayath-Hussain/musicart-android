@@ -1,6 +1,6 @@
 import { AxiosError, HttpStatusCode } from "axios"
 import { apiURLs } from "../URLs"
-import { axiosInstance } from "../instance"
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance"
 import { ApiError, UnauthorizedError } from "../errors"
 
 
@@ -14,6 +14,8 @@ export const placeOrderService = (payload: IPlaceOrderBody) =>
     new Promise(async (resolve, reject) => {
         try {
             const result = await axiosInstance.post(apiURLs.placeOrder, payload, { withCredentials: true })
+
+            saveAuthCookieFromResponse(result)
 
             resolve(result.data)
         }

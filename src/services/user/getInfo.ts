@@ -1,6 +1,6 @@
 import { AxiosError, HttpStatusCode } from "axios"
 import { apiURLs } from "../URLs"
-import { axiosInstance } from "../instance"
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance"
 import { UnauthorizedError } from "../errors"
 
 
@@ -14,7 +14,7 @@ export const getUserInfoService = () =>
 
         try {
             const result = await axiosInstance.get<Iresult>(apiURLs.getUserInfo, { withCredentials: true })
-
+            saveAuthCookieFromResponse(result)
             return resolve(result.data.name)
         }
         catch (ex) {

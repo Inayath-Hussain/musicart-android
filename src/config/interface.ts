@@ -2,8 +2,8 @@ import { NavigatorScreenParams } from "@react-navigation/native"
 import { route } from "../routes"
 
 export type LoginStackParamList = {
-    [route.users.login]: undefined
-    [route.users.register]: undefined
+    [route.users.login]: { path: string } | undefined
+    [route.users.register]: { path: string } | undefined
 }
 
 

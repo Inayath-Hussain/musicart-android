@@ -1,10 +1,12 @@
+import { removeAuthCookie } from "@src/utilities/storage/authTokens";
+
 /**
  * class for cancelled api call
  */
 export class CancelledError {
     message: string;
 
-    constructor(message: string) {
+    constructor(message: string = "request cancelled") {
         this.message = message
     }
 }
@@ -25,6 +27,7 @@ export class ApiError {
 
 export class UnauthorizedError extends ApiError {
     constructor() {
+        removeAuthCookie()
         super("Please login again");
     }
 }

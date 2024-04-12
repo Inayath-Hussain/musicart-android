@@ -1,6 +1,6 @@
 import { AxiosError, GenericAbortSignal, HttpStatusCode } from "axios";
 import { apiURLs } from "../URLs";
-import { axiosInstance } from "../instance";
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance";
 import { ApiError, CancelledError } from "../errors";
 
 
@@ -15,6 +15,9 @@ export const registerService = async (data: IRegisterBody, signal: GenericAbortS
     new Promise(async (resolve, reject) => {
         try {
             const result = await axiosInstance.post(apiURLs.registerURL, data, { signal, withCredentials: true })
+
+            saveAuthCookieFromResponse(result)
+
             resolve(result.data)
         }
         catch (ex) {

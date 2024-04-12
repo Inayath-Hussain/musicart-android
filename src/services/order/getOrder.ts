@@ -1,6 +1,6 @@
 import { AxiosError, HttpStatusCode } from "axios"
 import { apiURLs } from "../URLs"
-import { axiosInstance } from "../instance"
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance"
 import { UnauthorizedError } from "../errors"
 
 export interface IOrderDetail {
@@ -33,6 +33,8 @@ export const getOrderService = (id: string) =>
     new Promise<IOrderDetail>(async (resolve, reject) => {
         try {
             const result = await axiosInstance.get<IOrderDetail>(apiURLs.getOrder(id), { withCredentials: true })
+
+            saveAuthCookieFromResponse(result)
 
             return resolve(result.data)
         }

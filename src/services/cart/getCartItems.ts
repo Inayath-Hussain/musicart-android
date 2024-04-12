@@ -1,6 +1,6 @@
 import { AxiosError, HttpStatusCode } from "axios"
 import { apiURLs } from "../URLs"
-import { axiosInstance } from "../instance"
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance"
 import { CancelledError, UnauthorizedError } from "../errors"
 
 interface ICartItem {
@@ -33,6 +33,8 @@ export const getCartService = () =>
             const result = await axiosInstance.get(apiURLs.getCart, { withCredentials: true })
 
             if (result.data.message) return resolve(new EmptyCart(result.data.message))
+
+            saveAuthCookieFromResponse(result)
 
             resolve(result.data)
         }

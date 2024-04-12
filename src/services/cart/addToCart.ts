@@ -1,6 +1,6 @@
 import { AxiosError, HttpStatusCode } from "axios"
 import { apiURLs } from "../URLs"
-import { axiosInstance } from "../instance"
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance"
 import { UnauthorizedError } from "../errors"
 
 interface Ipayload {
@@ -19,6 +19,8 @@ export const addToCartService = async (payload: Ipayload) =>
 
         try {
             const result = await axiosInstance.post(apiURLs.addToCart, payload, { withCredentials: true })
+
+            saveAuthCookieFromResponse(result)
 
             resolve(result.data.data)
         }

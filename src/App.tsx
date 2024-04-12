@@ -5,29 +5,34 @@
  * @format
  */
 
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 
 import {
   SafeAreaView, StyleSheet,
 } from 'react-native';
 
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { NavigationContainer, NavigationContainerRef } from "@react-navigation/native";
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { MainTabStackParamList } from './config/interface';
+import { navigationContext } from './contexts/navigationContext';
+import { authCookieContext } from './contexts/authCookie';
+import Header from './Components/Common/Header';
 import { route } from './routes';
-import TabBar from './Navigator/TabBar';
-import UserStackNavigator from './Navigator/UserStackNavigator';
+import InvoiceStackNavigator from './Navigator/InvoiceStackNavigator';
 import ProductStackNavigator from './Navigator/ProductStackNavigator';
 import ShopStackNavigator from './Navigator/ShopStackNavigator';
-import InvoiceStackNavigator from './Navigator/InvoiceStackNavigator';
-import SearchBar from './Components/Common/SearchBar';
+import TabBar from './Navigator/TabBar';
+import UserStackNavigator from './Navigator/UserStackNavigator';
+import { EmptyCart, getCartService } from './services/cart/getCartItems';
+import { UnauthorizedError } from './services/errors';
+import { getUserInfoService } from './services/user/getInfo';
+import { updateCart } from './store/slices/cartItems';
 import { useGetProductsQuery } from './store/slices/productApi';
 import { productQuerySelector } from './store/slices/productQuery';
-import Header from './Components/Common/Header';
-import { navigationContext } from './contexts/navigationContext';
+import { updateUserName } from './store/slices/userSlice';
 
 
 
@@ -38,12 +43,64 @@ const mainTabNavigator = createBottomTabNavigator<MainTabStackParamList>();
 function App(): React.JSX.Element {
 
   const { setNavigationRef } = useContext(navigationContext);
+  const { loggedIn } = useContext(authCookieContext);
+
+  const dispatch = useDispatch();
 
   const navigationContainerRef = useRef<NavigationContainerRef<MainTabStackParamList> | null>(null);
 
   const { queryString } = useSelector(productQuerySelector);
   useGetProductsQuery(queryString, { refetchOnMountOrArgChange: true });
 
+
+  useEffect(() => {
+    const call = async () => {
+      // get user's cart data
+      getCartService()
+        .then(result => {
+          // if user has no items in cart
+          if (result instanceof EmptyCart) {
+            return dispatch(updateCart(0))
+          }
+
+          dispatch(updateCart(Number(result.total_items)))
+        })
+        .catch(err => {
+          if (err instanceof UnauthorizedError) {
+            navigationContainerRef.current?.navigate(route.users.index, { screen: "login" })
+            // please login again toast
+            // toast("Please login again")
+            return
+          }
+
+          // couldn't get cart items. please try again later toast
+          // toast("Couldn't get cart items")
+        })
+
+
+
+      getUserInfoService()
+        .then(name => {
+          dispatch(updateUserName(name))
+        })
+        .catch(err => {
+          if (err instanceof UnauthorizedError) {
+            navigationContainerRef.current?.navigate(route.users.index, { screen: "login" })
+            // please login again toast
+
+            return
+          }
+
+          // couldn't user name. please try again later toast
+          // toast("Couldn't get user name")
+        })
+    }
+
+    // make api call only when user is authenticated
+    if (loggedIn) {
+      call()
+    }
+  }, [loggedIn])
 
 
   return (

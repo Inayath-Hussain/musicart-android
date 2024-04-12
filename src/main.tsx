@@ -3,16 +3,19 @@ import { Provider } from "react-redux";
 import App from "./App";
 import { store } from "./store";
 import NavigationContextProvider from "./contexts/navigationContext";
+import AuthCookieContextProvide from "./contexts/authCookie";
 
 function Main(): React.JSX.Element {
     return (
-        <NavigationContextProvider>
-            <Provider store={store}>
+        <AuthCookieContextProvide>
+            <NavigationContextProvider>
+                <Provider store={store}>
 
-                <App />
+                    <App />
 
-            </Provider>
-        </NavigationContextProvider>
+                </Provider>
+            </NavigationContextProvider>
+        </AuthCookieContextProvide>
     )
 }
 

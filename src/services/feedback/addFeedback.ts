@@ -1,7 +1,7 @@
 import { AxiosError, HttpStatusCode } from "axios"
 import { apiURLs } from "../URLs"
 import { UnauthorizedError } from "../errors"
-import { axiosInstance } from "../instance"
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance"
 
 
 interface IAddFeedbackBody {
@@ -13,6 +13,8 @@ export const addFeedbackService = (payload: IAddFeedbackBody) =>
     new Promise(async (resolve, reject) => {
         try {
             const result = await axiosInstance.post(apiURLs.addfeedback, payload, { withCredentials: true })
+
+            saveAuthCookieFromResponse(result)
 
             return resolve(result)
         }

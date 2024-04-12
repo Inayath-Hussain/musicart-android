@@ -1,18 +1,135 @@
+import { useEffect, useState } from 'react';
+import {
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    TouchableWithoutFeedback,
+    View
+} from 'react-native';
+import z from "zod";
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ScrollView, StyleSheet, TextInput, TouchableWithoutFeedback, View } from 'react-native';
+import { useNetInfo } from "@react-native-community/netinfo";
+
 
 import RobotoText from '@src/Components/Common/Roboto/Text';
-import { fonts } from '@src/config/fonts';
 import PrimaryButton from '@src/Components/Common/PrimaryButton';
-import { LoginStackParamList } from '@src/config/interface';
 import { colors } from '@src/config/color';
+import { fonts } from '@src/config/fonts';
+import { LoginStackParamList, MainTabStackParamList } from '@src/config/interface';
+import FormError from '@src/Components/Common/FormError';
+import { LoginBodyError, loginService } from '@src/services/user/login';
+import { ApiError, CancelledError } from '@src/services/errors';
+import { useAbortController } from '@src/hooks/useAbortController';
+import { route } from '@src/routes';
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 
-const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">> = ({ navigation }) => {
+const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">> = ({ navigation: StackNavigation, route: routeProp }) => {
 
-    const handleLogin = () => {
-        console.log("login ... ")
+    const { params } = routeProp;
+
+    const nextRoute = params?.path ? params.path : route.home.index
+
+    // validation schema for form values
+    const schema = z.object({
+        identifier: z.string().trim().min(1, "identifier is required"),
+        password: z.string().trim().min(8, "must be atleast 8 letters long")
+    }).refine(({ identifier }) => {
+
+        // checks if the identifier value is either a valid email or a valid mobile number
+        const emailSchema = z.string().trim().email()
+        const mobileNumberSchema = /^[0-9]+$/
+
+        const emailValidationResult = emailSchema.safeParse(identifier)
+
+        return emailValidationResult.success || mobileNumberSchema.test(identifier)
+    }, { message: "should be an email or mobile number", path: ["identifier"] })
+
+    type IForm = z.infer<typeof schema>
+
+
+
+    const [formValues, setFormValues] = useState<IForm>({
+        identifier: "",
+        password: ""
+    });
+
+    const initialFormErrors: IForm = {
+        identifier: "",
+        password: ""
     }
+
+    const [formErrors, setFormErrors] = useState<IForm>(initialFormErrors)
+
+    // state variable contain to display form submition error
+    const [submitionError, setSubmitionError] = useState("");
+
+    // state variable to indicate if a request is pending
+    const [loading, setLoading] = useState(false);
+
+
+    // updates form input values
+    const handleChange = (key: keyof IForm, value: string) => setFormValues(prev => ({ ...prev, [key]: value }))
+
+
+    const { signalRef } = useAbortController();
+    const { isConnected: isOnline } = useNetInfo();
+
+    const mainNavigation = useNavigation<BottomTabNavigationProp<MainTabStackParamList>>();
+
+
+    useEffect(() => {
+        setSubmitionError(isOnline ? "" : "You are offline");
+    }, [isOnline])
+
+
+    const handleLogin = async () => {
+
+        if (isOnline === false) return
+
+        try {
+            schema.parse(formValues)
+
+            setLoading(true)
+            const { identifier, password } = formValues
+            await loginService({ identifier, password }, signalRef.current.signal)
+
+            // @ts-ignore
+            mainNavigation.navigate(nextRoute)
+            setLoading(false)
+        }
+        catch (ex) {
+            setLoading(false);
+            switch (true) {
+                case (ex instanceof z.ZodError):
+                    const { identifier, password } = ex.formErrors.fieldErrors
+                    return setFormErrors({
+                        identifier: identifier ? identifier[0] : "",
+                        password: password ? password[0] : ""
+                    })
+
+
+                case (ex instanceof LoginBodyError):
+                    return setFormErrors({
+                        identifier: ex.errors.identifier || "",
+                        password: ex.errors.password || ""
+                    })
+
+                case (ex instanceof CancelledError):
+                    break;
+
+                case (ex instanceof ApiError):
+                    setSubmitionError(ex.message)
+            }
+            console.log(ex)
+            setFormErrors(initialFormErrors)
+        }
+
+    }
+
+
+    const getInputClass = (error: string) => [styles.textInput, error !== "" ? styles.textInputError : {}]
 
 
 
@@ -23,6 +140,8 @@ const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">
 
             {/* login form */}
             <View style={styles.container}>
+
+                <FormError errorMessage={submitionError} type='Form' style={styles.submitionErrorMessage} />
 
                 <View style={styles.header_container}>
                     <RobotoText style={styles.header_text_bold}>Sign in.</RobotoText>
@@ -35,21 +154,23 @@ const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">
                 <RobotoText style={styles.label}>
                     Enter your email or mobile number
                 </RobotoText>
-                <TextInput
+                <TextInput value={formValues.identifier} onChangeText={(value) => handleChange("identifier", value)}
                     keyboardType="email-address" textContentType="emailAddress"
-                    style={styles.textInput} />
+                    style={getInputClass(formErrors.identifier)} />
+                <FormError errorMessage={formErrors.identifier} type='Field' />
 
 
                 {/* password */}
                 <RobotoText style={styles.label}>
                     Password
                 </RobotoText>
-                <TextInput onChangeText={value => console.log(value)}
+                <TextInput value={formValues.password} onChangeText={(value) => handleChange("password", value)}
                     keyboardType="default" textContentType="password" secureTextEntry={true}
-                    style={styles.textInput} />
+                    style={getInputClass(formErrors.password)} />
+                <FormError errorMessage={formErrors.password} type='Field' />
 
 
-                <PrimaryButton text="Continue" handlePress={handleLogin} buttonStyle={styles.button} />
+                <PrimaryButton text="Continue" handlePress={handleLogin} buttonStyle={styles.button} disabled={loading} />
 
                 <RobotoText style={styles.conditions_and_privacy}>
                     By continuing, you agree to Musicart privacy notice and conditions of use.
@@ -73,7 +194,7 @@ const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">
 
 
             {/* register link */}
-            <TouchableWithoutFeedback onPress={() => navigation.navigate("register")}>
+            <TouchableWithoutFeedback onPress={() => StackNavigation.navigate("register")}>
                 <View style={styles.registerButton}>
                     <RobotoText style={styles.registerText}>Create your Musicart account</RobotoText>
                 </View>
@@ -177,6 +298,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#B6B6B6",
         borderRadius: 5
+    },
+
+    textInputError: {
+        borderColor: colors.errorColor
+    },
+
+    submitionErrorMessage: {
+        fontSize: 20,
+        marginBottom: 20
     }
 
 })

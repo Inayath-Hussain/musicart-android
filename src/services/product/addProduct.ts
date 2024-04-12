@@ -1,6 +1,6 @@
 import { AxiosError, GenericAbortSignal, HttpStatusCode } from "axios"
 import { apiURLs } from "../URLs"
-import { axiosInstance } from "../instance"
+import { axiosInstance, saveAuthCookieFromResponse } from "../instance"
 import { ApiError, CancelledError } from "../errors"
 
 interface IAddProductBody {
@@ -19,6 +19,9 @@ export const addProductService = (payload: IAddProductBody, signal: GenericAbort
     new Promise(async (resolve, reject) => {
         try {
             const result = await axiosInstance.post(apiURLs.addProduct, payload, { signal, withCredentials: true, headers: { "Content-Type": "multipart/form-data" } })
+
+            saveAuthCookieFromResponse(result)
+
             resolve(result)
             console.log(result)
         }
