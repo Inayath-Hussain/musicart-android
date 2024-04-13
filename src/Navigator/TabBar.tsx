@@ -1,14 +1,14 @@
-import { StyleSheet, Text, TouchableWithoutFeedback, View } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, View } from "react-native";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 import RobotoText from "../Components/Common/Roboto/Text";
 import HomeIcon from "../Components/Icons/Home";
-import CartIcon from "../Components/Icons/Cart";
 import InvoiceIcon from "../Components/Icons/Invoice";
 import LoginIcon from "../Components/Icons/Login";
 import { colors } from "../config/color";
 import { route } from "../routes";
 import LogoutIcon from "@src/Components/Icons/Logout";
+import Cart from "./Cart";
 
 
 
@@ -33,7 +33,7 @@ const TabBar: React.FC<BottomTabBarProps & Iprops> = ({ descriptors, insets, nav
     const IconSize = 25;
     const icons = {
         [route.home.index]: <HomeIcon width={IconSize} height={IconSize} />,
-        [route.shop.index]: <CartIcon width={IconSize} height={IconSize} />,
+        [route.shop.index]: <Cart width={IconSize} height={IconSize} />,
         [route.invoices.index]: <InvoiceIcon width={IconSize} height={IconSize} />,
 
         // switch icon depending on auth tokens
@@ -48,14 +48,6 @@ const TabBar: React.FC<BottomTabBarProps & Iprops> = ({ descriptors, insets, nav
 
 
     state.routes.map((stateRoute, index) => {
-
-        // console.log(stateRoute.name)
-
-        // when stateRoute.name === route.user.index
-        // check if user is loggedIn
-        //      change icon from icons object above
-        //      change label to "Logout" below 
-        //      change onPress and onLongPress to logout user using removeAuthCookies
 
         const { options } = descriptors[stateRoute.key];
 
