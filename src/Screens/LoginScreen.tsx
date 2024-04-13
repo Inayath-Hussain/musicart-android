@@ -27,10 +27,6 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 
 const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">> = ({ navigation: StackNavigation, route: routeProp }) => {
 
-    const { params } = routeProp;
-
-    const nextRoute = params?.path ? params.path : route.home.index
-
     // validation schema for form values
     const schema = z.object({
         identifier: z.string().trim().min(1, "identifier is required"),

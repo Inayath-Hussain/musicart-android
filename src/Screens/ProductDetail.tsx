@@ -1,6 +1,8 @@
 import { useContext, useMemo } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 import BuyNowButton from "@src/Components/Common/BuyNowButton";
@@ -10,7 +12,6 @@ import { MainTabStackParamList, ProductStackParamList } from "@src/config/interf
 import { useGetProductsQuery } from "@src/store/slices/productApi";
 import { productQuerySelector } from "@src/store/slices/productQuery";
 import RobotoText from "@src/Components/Common/Roboto/Text";
-import StarIcon from "@src/Components/Icons/Star";
 import { colors } from "@src/config/color";
 import ProductRating from "@src/Components/ProductDetail/Rating";
 import { capitalize } from "@src/utilities/capitalize";
@@ -20,14 +21,12 @@ import SecondaryButton from "@src/Components/Common/SecondaryButton";
 import { authCookieContext } from "@src/contexts/authCookie";
 import { addToCartService } from "@src/services/cart/addToCart";
 import { updateCartItem } from "@src/store/slices/cartItems";
-import { useNavigation } from "@react-navigation/native";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { route } from "@src/routes";
 import { UnauthorizedError } from "@src/services/errors";
 
 
 
-const ProductDetail: React.FC<NativeStackScreenProps<ProductStackParamList, "product-detail">> = ({ navigation, route: routeProp }) => {
+const ProductDetail: React.FC<NativeStackScreenProps<ProductStackParamList, "product-detail">> = ({ route: routeProp }) => {
 
     const { id } = routeProp.params;
     const { queryString } = useSelector(productQuerySelector);
@@ -44,7 +43,7 @@ const ProductDetail: React.FC<NativeStackScreenProps<ProductStackParamList, "pro
     const productDetail = useMemo(getData, [id]);
 
     // go back functionality
-    const goBack = () => navigation.navigate("product-list");
+    const goBack = () => navigate(route.home.index, { screen: route.home.productList });
 
 
     const addToCart = (buyNow: boolean) => {
