@@ -1,4 +1,5 @@
 import { Provider } from "react-redux";
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import App from "./App";
 import { store } from "./store";
@@ -7,15 +8,17 @@ import AuthCookieContextProvide from "./contexts/authCookie";
 
 function Main(): React.JSX.Element {
     return (
-        <AuthCookieContextProvide>
-            <NavigationContextProvider>
-                <Provider store={store}>
+        <Provider store={store}>
+            <AuthCookieContextProvide>
+                <NavigationContextProvider>
+                    <GestureHandlerRootView>
 
-                    <App />
+                        <App />
 
-                </Provider>
-            </NavigationContextProvider>
-        </AuthCookieContextProvide>
+                    </GestureHandlerRootView>
+                </NavigationContextProvider>
+            </AuthCookieContextProvide>
+        </Provider>
     )
 }
 

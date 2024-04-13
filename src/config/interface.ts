@@ -29,7 +29,7 @@ export type InvoiceStackParamList = {
 export type MainTabStackParamList = {
     // specifying screen params is required to be able to navigate to nested screen
     [route.home.index]: NavigatorScreenParams<ProductStackParamList>
-    [route.shop.index]: undefined
+    [route.shop.index]: NavigatorScreenParams<ShopStackParamList>
     [route.invoices.index]: undefined
     [route.users.index]: NavigatorScreenParams<LoginStackParamList>
 }

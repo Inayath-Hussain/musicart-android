@@ -91,7 +91,6 @@ const TabBar: React.FC<BottomTabBarProps & Iprops> = ({ descriptors, insets, nav
 
         // for login route if user is loggedin then provide logout
         if (stateRoute.name === route.users.index && loggedIn) {
-            console.log(stateRoute.name)
 
             const onPress = () => {
                 const event = navigation.emit({

@@ -1,6 +1,9 @@
+import { updateCart } from "@src/store/slices/cartItems";
+import { updateUserName } from "@src/store/slices/userSlice";
 import { authCookieKey, getAuthCookie, removeAuthCookie } from "@src/utilities/storage/authTokens";
 import { storage } from "@src/utilities/storage/storageInstance";
 import { PropsWithChildren, createContext, useState } from "react";
+import { useDispatch } from "react-redux";
 
 
 interface Icontext {
@@ -19,6 +22,8 @@ const AuthCookieContextProvide: React.FC<PropsWithChildren> = ({ children }) => 
     const [value, setValue] = useState(getAuthCookie() || "");
     const [loggedIn, setLoggedIn] = useState(getAuthCookie() ? true : false);
 
+    const dispatch = useDispatch();
+
     storage.addOnValueChangedListener((key) => {
         if (key === authCookieKey) {
             const cookie = getAuthCookie()
@@ -28,7 +33,12 @@ const AuthCookieContextProvide: React.FC<PropsWithChildren> = ({ children }) => 
     })
 
     const logout = () => {
-        removeAuthCookie()
+        // clear cart
+        dispatch(updateCart(0))
+        // clear name
+        dispatch(updateUserName(""))
+        removeAuthCookie();
+
     }
 
     return (
