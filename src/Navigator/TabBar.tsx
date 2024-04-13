@@ -8,6 +8,7 @@ import InvoiceIcon from "../Components/Icons/Invoice";
 import LoginIcon from "../Components/Icons/Login";
 import { colors } from "../config/color";
 import { route } from "../routes";
+import LogoutIcon from "@src/Components/Icons/Logout";
 
 
 
@@ -21,7 +22,13 @@ interface Idata {
 }
 
 
-const TabBar: React.FC<BottomTabBarProps> = ({ descriptors, insets, navigation, state }) => {
+interface Iprops {
+    loggedIn: boolean
+    logout: () => void
+}
+
+
+const TabBar: React.FC<BottomTabBarProps & Iprops> = ({ descriptors, insets, navigation, state, loggedIn, logout }) => {
 
     const IconSize = 25;
     const icons = {
@@ -40,24 +47,32 @@ const TabBar: React.FC<BottomTabBarProps> = ({ descriptors, insets, navigation, 
 
 
 
-    state.routes.map((route, index) => {
+    state.routes.map((stateRoute, index) => {
 
-        const { options } = descriptors[route.key];
+        // console.log(stateRoute.name)
+
+        // when stateRoute.name === route.user.index
+        // check if user is loggedIn
+        //      change icon from icons object above
+        //      change label to "Logout" below 
+        //      change onPress and onLongPress to logout user using removeAuthCookies
+
+        const { options } = descriptors[stateRoute.key];
 
         // text to display below icon
-        const label = options.title ? options.title : route.name;
+        const label = options.title ? options.title : stateRoute.name;
 
         const onPress = () => {
             const event = navigation.emit({
                 type: 'tabPress',
-                target: route.key,
+                target: stateRoute.key,
                 canPreventDefault: true
             });
 
             const isFocused = state.index === index
 
             if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(route.name, route.params);
+                navigation.navigate(stateRoute.name, stateRoute.params);
             }
         };
 
@@ -65,12 +80,44 @@ const TabBar: React.FC<BottomTabBarProps> = ({ descriptors, insets, navigation, 
         const onLongPress = () => {
             navigation.emit({
                 type: 'tabLongPress',
-                target: route.key,
+                target: stateRoute.key,
             });
         };
 
         // icon to render
-        const Icon = icons[route.name as keyof typeof icons]
+        const Icon = icons[stateRoute.name as keyof typeof icons]
+
+
+
+        // for login route if user is loggedin then provide logout
+        if (stateRoute.name === route.users.index && loggedIn) {
+            console.log(stateRoute.name)
+
+            const onPress = () => {
+                const event = navigation.emit({
+                    type: 'tabPress',
+                    target: stateRoute.key,
+                    canPreventDefault: true
+                });
+
+                const isFocused = state.index === index
+
+                if (!isFocused && !event.defaultPrevented) {
+                    logout();
+                }
+            }
+
+
+            const onLongPress = () => {
+                logout()
+            }
+
+            const Icon = <LogoutIcon width={IconSize} height={IconSize} />
+
+            data.push({ label: "Logout", onPress, onLongPress, Icon, index })
+
+            return
+        }
 
         data.push({ label, onPress, onLongPress, Icon, index })
 

@@ -43,7 +43,7 @@ const mainTabNavigator = createBottomTabNavigator<MainTabStackParamList>();
 function App(): React.JSX.Element {
 
   const { setNavigationRef } = useContext(navigationContext);
-  const { loggedIn } = useContext(authCookieContext);
+  const { loggedIn, logout } = useContext(authCookieContext);
 
   const dispatch = useDispatch();
 
@@ -110,7 +110,7 @@ function App(): React.JSX.Element {
 
         <Header />
 
-        <mainTabNavigator.Navigator backBehavior='history' screenOptions={{ unmountOnBlur: true, headerShown: false }} tabBar={TabBar}>
+        <mainTabNavigator.Navigator backBehavior='history' screenOptions={{ unmountOnBlur: true, headerShown: false }} tabBar={(props) => <TabBar {...props} loggedIn={loggedIn} logout={logout} />}>
 
           {/* home and product detail */}
           <mainTabNavigator.Screen name={route.home.index} options={{ title: "Home" }}
