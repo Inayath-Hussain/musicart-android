@@ -1,26 +1,146 @@
+import { Fragment, useEffect, useState } from "react";
 import {
+    KeyboardType,
     ScrollView,
     StyleSheet,
     TextInput,
     TouchableWithoutFeedback,
     View
 } from "react-native";
-
+import z from "zod";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useNetInfo } from "@react-native-community/netinfo";
 
 
 import PrimaryButton from "@src/Components/Common/PrimaryButton";
 import RobotoText from "@src/Components/Common/Roboto/Text";
 import { colors } from "@src/config/color";
 import { fonts } from "@src/config/fonts";
-import { LoginStackParamList } from "@src/config/interface";
+import { LoginStackParamList, MainTabStackParamList } from "@src/config/interface";
+import { RegisterBodyError, registerService } from "@src/services/user/register";
+import { useAbortController } from "@src/hooks/useAbortController";
+import { useNavigation } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { ApiError, CancelledError } from "@src/services/errors";
+import FormError from "@src/Components/Common/FormError";
 
 const RegisterScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "register">> = ({ navigation }) => {
 
+    const baseRequirement = (fieldName: string) => z.string().trim().min(1, { message: `${fieldName} is required` })
+    // validation schema for form values
+    const schema = z.object({
+        name: baseRequirement("name"),
+        mobileNumber: baseRequirement("mobile number"),
+        email: baseRequirement("email").email("email is invalid"),
+        password: baseRequirement("password").min(8, "must be atleast 8 letters long")
+    })
 
-    const handleRegister = () => {
-        console.log("register ... ")
+    type IForm = z.infer<typeof schema>
+
+    const [formValues, setFormValues] = useState<IForm>({
+        name: "",
+        mobileNumber: "",
+        email: "",
+        password: ""
+    })
+
+    const initalErrors: IForm = {
+        name: "",
+        mobileNumber: "",
+        email: "",
+        password: ""
     }
+
+    // state variable to store all form field errors
+    const [formErrors, setFormErrors] = useState<IForm>(initalErrors)
+
+    // state variable contain to display form submition error
+    const [submitionError, setSubmitionError] = useState("");
+
+    // state variable to indicate if a request is pending
+    const [loading, setLoading] = useState(false);
+
+
+    const { signalRef } = useAbortController();
+    const { isConnected: isOnline } = useNetInfo();
+    const mainNavigation = useNavigation<BottomTabNavigationProp<MainTabStackParamList>>();
+
+
+    useEffect(() => {
+        setSubmitionError(isOnline ? "" : "You are offline");
+    }, [isOnline])
+
+
+
+    // updates form input values
+    const handleChange = (key: keyof IForm, value: string) => setFormValues(prev => ({ ...prev, [key]: value }))
+
+    const handleRegister = async () => {
+        console.log("register ... ")
+
+        try {
+            // validate form values
+            schema.parse(formValues)
+
+            setLoading(true)
+            const { name, mobileNumber, email, password } = formValues;
+            await registerService({ name, mobileNumber, email, password }, signalRef.current.signal)
+
+            mainNavigation.goBack();
+            setLoading(false)
+        }
+        catch (ex) {
+            setLoading(false)
+            switch (true) {
+                case (ex instanceof z.ZodError):
+                    const { name, mobileNumber, email, password } = ex.formErrors.fieldErrors
+
+                    return setFormErrors({
+                        name: name ? name[0] : "",
+                        mobileNumber: mobileNumber ? mobileNumber[0] : "",
+                        email: email ? email[0] : "",
+                        password: password ? password[0] : ""
+                    })
+
+                case (ex instanceof RegisterBodyError):
+                    return setFormErrors({
+                        name: ex.errors.name || "",
+                        mobileNumber: ex.errors.mobileNumber || "",
+                        email: ex.errors.email || "",
+                        password: ex.errors.password || ""
+                    })
+
+                case (ex instanceof CancelledError):
+                    break;
+
+                case (ex instanceof ApiError):
+                    setSubmitionError(ex.message)
+            }
+
+            setFormErrors(initalErrors)
+        }
+
+    }
+
+    interface Input {
+        label: string
+        key: keyof IForm
+
+        keyboardType: KeyboardType
+        textContentType: TextInput["props"]["textContentType"]
+
+        secureTextEntry?: boolean
+    }
+
+    const InputArr: Input[] = [
+        { label: "Your name", key: "name", keyboardType: "default", textContentType: "name" },
+        { label: "Mobile number", key: "mobileNumber", keyboardType: "numeric", textContentType: "telephoneNumber" },
+        { label: "Email Id", key: "email", keyboardType: "email-address", textContentType: "emailAddress" },
+        { label: "Password", key: "password", keyboardType: "default", textContentType: "password", secureTextEntry: true }
+    ]
+
+
+    const getInputClass = (error: string) => [styles.textInput, error !== "" ? styles.textInputError : {}]
 
 
     return (
@@ -28,8 +148,11 @@ const RegisterScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "regi
 
             <RobotoText style={styles.heading}>Welcome</RobotoText>
 
-            {/* login form */}
+            {/* register form */}
             <View style={styles.container}>
+
+                {/* main error message */}
+                <FormError errorMessage={submitionError} type='Form' style={styles.submitionErrorMessage} />
 
                 <View style={styles.header_container}>
                     <RobotoText style={styles.header_text_bold}>Create account.</RobotoText>
@@ -38,40 +161,22 @@ const RegisterScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "regi
                 </View>
 
 
-                {/* name */}
-                <RobotoText style={styles.label}>
-                    Your name
-                </RobotoText>
-                <TextInput
-                    textContentType="name"
-                    style={styles.textInput} />
+
+                {InputArr.map(i => (
+                    <Fragment key={i.key}>
+                        <RobotoText style={styles.label}>
+                            {i.label}
+                        </RobotoText>
+
+                        <TextInput value={formValues[i.key]} onChangeText={(value) => handleChange(i.key, value)}
+                            keyboardType={i.keyboardType} textContentType={i.textContentType}
+                            style={getInputClass(formErrors[i.key])} secureTextEntry={i.secureTextEntry || false} />
+                        <FormError errorMessage={formErrors[i.key]} type='Field' />
+
+                    </Fragment>
+                ))}
 
 
-                {/* mobile number */}
-                <RobotoText style={styles.label}>
-                    Mobile number
-                </RobotoText>
-                <TextInput
-                    keyboardType="numeric" textContentType="telephoneNumber"
-                    style={styles.textInput} />
-
-
-                {/* email */}
-                <RobotoText style={styles.label}>
-                    Email Id
-                </RobotoText>
-                <TextInput
-                    keyboardType="email-address" textContentType="emailAddress"
-                    style={styles.textInput} />
-
-
-                {/* email */}
-                <RobotoText style={styles.label}>
-                    Password
-                </RobotoText>
-                <TextInput
-                    keyboardType="default" textContentType="password" secureTextEntry={true}
-                    style={styles.textInput} />
 
 
                 <RobotoText style={[styles.conditions_and_privacy, styles.registerConditionText]}>
@@ -204,6 +309,15 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#B6B6B6",
         borderRadius: 5
+    },
+
+    textInputError: {
+        borderColor: colors.errorColor
+    },
+
+    submitionErrorMessage: {
+        fontSize: 20,
+        marginBottom: 20
     }
 
 })
