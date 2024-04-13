@@ -54,17 +54,34 @@ const TabBar: React.FC<BottomTabBarProps & Iprops> = ({ descriptors, insets, nav
         // text to display below icon
         const label = options.title ? options.title : stateRoute.name;
 
+
+        let key = stateRoute.key;
+        let name = stateRoute.name;
+        let params = stateRoute.params;
+
+        // for protected routes like cart and invoice, if user is not logged in then navigate to login screen
+        if (stateRoute.name === route.shop.index || stateRoute.name === route.invoices.index) {
+            if (loggedIn === false) {
+                const userRoute = state.routes.find(s => s.name === route.users.index);
+
+                // this is just a safety measure, if user route is not found then use their respective one's.
+                key = userRoute?.key || key
+                name = userRoute?.name || name
+                params = userRoute?.params || params
+            }
+        }
+
         const onPress = () => {
             const event = navigation.emit({
                 type: 'tabPress',
-                target: stateRoute.key,
+                target: key,
                 canPreventDefault: true
             });
 
             const isFocused = state.index === index
 
             if (!isFocused && !event.defaultPrevented) {
-                navigation.navigate(stateRoute.name, stateRoute.params);
+                navigation.navigate(name, params);
             }
         };
 
@@ -72,7 +89,7 @@ const TabBar: React.FC<BottomTabBarProps & Iprops> = ({ descriptors, insets, nav
         const onLongPress = () => {
             navigation.emit({
                 type: 'tabLongPress',
-                target: stateRoute.key,
+                target: key,
             });
         };
 
@@ -81,7 +98,7 @@ const TabBar: React.FC<BottomTabBarProps & Iprops> = ({ descriptors, insets, nav
 
 
 
-        // for login route if user is loggedin then provide logout
+        // for login route if user is loggedin then provide logout functionality
         if (stateRoute.name === route.users.index && loggedIn) {
 
             const onPress = () => {
