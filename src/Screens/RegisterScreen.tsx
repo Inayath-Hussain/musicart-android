@@ -93,7 +93,7 @@ const RegisterScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "regi
             {/* register link */}
             <RobotoText style={styles.loginText}>
                 Already have an account?
-                <TouchableWithoutFeedback onPress={() => navigation.navigate("login")}>
+                <TouchableWithoutFeedback onPress={() => navigation.replace("login")}>
                     <RobotoText style={styles.loginTextLink}> Sign in</RobotoText>
                 </TouchableWithoutFeedback>
             </RobotoText>

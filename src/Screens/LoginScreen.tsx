@@ -95,8 +95,7 @@ const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">
             const { identifier, password } = formValues
             await loginService({ identifier, password }, signalRef.current.signal)
 
-            // @ts-ignore
-            mainNavigation.navigate(nextRoute)
+            mainNavigation.goBack();
             setLoading(false)
         }
         catch (ex) {
@@ -194,7 +193,7 @@ const LoginScreen: React.FC<NativeStackScreenProps<LoginStackParamList, "login">
 
 
             {/* register link */}
-            <TouchableWithoutFeedback onPress={() => StackNavigation.navigate("register")}>
+            <TouchableWithoutFeedback onPress={() => StackNavigation.replace("register")}>
                 <View style={styles.registerButton}>
                     <RobotoText style={styles.registerText}>Create your Musicart account</RobotoText>
                 </View>
