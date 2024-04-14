@@ -12,6 +12,7 @@ export interface ICustomSelectProps {
     options: ICustomSelectoption
     style?: ViewStyle
     defaultText: string
+    featureOption?: boolean
 
     value: string
     handleChange: (value: string) => void
@@ -19,7 +20,9 @@ export interface ICustomSelectProps {
 
 
 
-const DrawerSelect: React.FC<ICustomSelectProps> = ({ options, defaultText, handleChange, value, style = {} }) => {
+const DrawerSelect: React.FC<ICustomSelectProps> = ({ options, defaultText, handleChange, value, style = {}, featureOption = false }) => {
+
+    const optionsData = featureOption ? [{ title: "Featured", data: "featured" }] : []
 
     return (
         <View style={{ justifyContent: "center", alignItems: "flex-start" }}>
@@ -28,7 +31,7 @@ const DrawerSelect: React.FC<ICustomSelectProps> = ({ options, defaultText, hand
                 placeholder={defaultText}
                 options={
                     [
-                        { title: "Featured", data: "featured" },
+                        ...optionsData,
                         ...Object.keys(options).map(o => ({ data: o, title: options[o] }))
                     ]
                 }

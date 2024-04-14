@@ -90,24 +90,24 @@ const SortAndFilter = () => {
             contentContainerStyle={styles.containerFlex} >
 
             <DrawerSelect value={sortBy} handleChange={(value) => handleChange(value).sort()}
-                defaultText="Sort By" options={sortOptions} />
+                defaultText="Sort By" options={sortOptions} featureOption />
 
 
             <View style={styles.filterContainer}>
 
 
                 <DrawerSelect value={headphoneType} handleChange={(value) => handleChange(value).headphoneType()}
-                    defaultText="Headphone Type" options={headphoneTypeOptions} style={styles.filter} />
+                    defaultText="Headphone Type" options={headphoneTypeOptions} style={styles.filter} featureOption />
 
                 <DrawerSelect value={company} handleChange={(value) => handleChange(value).company()}
-                    defaultText="Company" options={options.company} style={styles.filter} />
+                    defaultText="Company" options={options.company} style={styles.filter} featureOption />
 
                 <DrawerSelect value={color} handleChange={(value) => handleChange(value).color()}
-                    defaultText="Color" options={options.color} style={styles.filter} />
+                    defaultText="Color" options={options.color} style={styles.filter} featureOption />
 
 
                 <DrawerSelect value={price} handleChange={(value) => handleChange(value).price()}
-                    defaultText="Price" options={priceOptions} style={styles.filter} />
+                    defaultText="Price" options={priceOptions} style={styles.filter} featureOption />
 
             </View>
         </ScrollView>

@@ -1,7 +1,6 @@
-import LottieView from "lottie-react-native";
 import { useCallback, useContext, useState } from "react";
 import { useDispatch } from "react-redux";
-import { Modal, ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { useNetInfo } from "@react-native-community/netinfo";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
@@ -10,6 +9,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 
 import CartItems from "@src/Components/Cart/CartItems";
+import CartLoader from "@src/Components/Cart/CartLoader";
 import GoBackButton from "@src/Components/Common/GoBackButton";
 import RobotoText from "@src/Components/Common/Roboto/Text";
 import SecondaryButton from "@src/Components/Common/SecondaryButton";
@@ -124,19 +124,7 @@ const CartScreen: React.FC<NativeStackScreenProps<ShopStackParamList, "cart">> =
 
             {
                 loading &&
-                <Modal transparent>
-                    <View style={styles.modal}>
-
-                        <LottieView
-                            autoPlay
-                            loop
-                            source={require("@src/assets/lottie/cart-loader-animation.json")}
-
-                            style={styles.lottie}
-                        />
-
-                    </View>
-                </Modal>
+                <CartLoader />
             }
 
             <GoBackButton onPress={handlePress} />
@@ -197,20 +185,8 @@ const styles = StyleSheet.create({
         minHeight: "100%"
     },
 
-    lottie: {
-        width: 300,
-        height: 300
-    },
-
     mediumText: {
         fontSize: 20
-    },
-
-    modal: {
-        backgroundColor: "#00000070",
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center"
     },
 
     placeOrderButton: {
