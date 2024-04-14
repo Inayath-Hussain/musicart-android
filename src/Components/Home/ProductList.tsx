@@ -1,14 +1,15 @@
+import { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { FlatList, Image, StyleSheet, View, TouchableWithoutFeedback, useWindowDimensions } from "react-native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 
+import HomeLoader from "./HomeLoader";
 import RobotoText from "../Common/Roboto/Text";
 import { capitalize } from "@src/utilities/capitalize";
-import { CompositeNavigationProp, useNavigation, } from "@react-navigation/native";
+import { useNavigation, } from "@react-navigation/native";
 import { route } from "@src/routes";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { MainTabStackParamList, ProductStackParamList } from "@src/config/interface";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { MainTabStackParamList } from "@src/config/interface";
 import { useGetProductsQuery } from "@src/store/slices/productApi";
-import { useSelector } from "react-redux";
 import { productQuerySelector } from "@src/store/slices/productQuery";
 
 
@@ -25,26 +26,41 @@ const ProductList = () => {
 
     const { queryString } = useSelector(productQuerySelector);
 
-    const { data } = useGetProductsQuery(queryString, { refetchOnMountOrArgChange: true })
+    const { data, isLoading, refetch, isFetching } = useGetProductsQuery(queryString);
 
+    useEffect(() => {
+
+        if (isLoading === false) {
+            refetch()
+        }
+    }, [])
 
 
     return (
-        <FlatList
-            key={"product_list"}
-            data={data}
-            renderItem={(item) => <Card {...item.item} key={item.item._id} />}
-            numColumns={2}
-            keyExtractor={d => d._id}
+        <>
 
-            style={styles.flatList}
-            columnWrapperStyle={styles.flatListColumn}
+            {
+                (isFetching) &&
+                <HomeLoader />
+            }
 
-            // // wrapper of each row, 
-            // CellRendererComponent={({ children }) => { return (<View style={styles.cell}>{children}</View>) }}
 
-            scrollEnabled={false}
-        />
+            <FlatList
+                key={"product_list"}
+                data={data}
+                renderItem={(item) => <Card {...item.item} key={item.item._id} />}
+                numColumns={2}
+                keyExtractor={d => d._id}
+
+                style={styles.flatList}
+                columnWrapperStyle={styles.flatListColumn}
+
+                // // wrapper of each row, 
+                // CellRendererComponent={({ children }) => { return (<View style={styles.cell}>{children}</View>) }}
+
+                scrollEnabled={false}
+            />
+        </>
     );
 }
 

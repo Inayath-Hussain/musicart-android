@@ -1,14 +1,14 @@
 import LottieView from "lottie-react-native";
-import { StyleSheet } from "react-native";
 import Loader from "../Common/Loader";
+import { StyleSheet } from "react-native";
 
-const CartLoader = () => {
+const HomeLoader = () => {
     return (
         <Loader>
             <LottieView
                 autoPlay
                 loop
-                source={require("@src/assets/lottie/cart-loader-animation.json")}
+                source={require("@src/assets/lottie/musicart-loader.json")}
 
                 style={styles.lottie}
             />
@@ -24,4 +24,5 @@ const styles = StyleSheet.create({
     }
 })
 
-export default CartLoader;
+
+export default HomeLoader;

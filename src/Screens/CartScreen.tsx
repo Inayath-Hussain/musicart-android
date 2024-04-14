@@ -21,6 +21,7 @@ import { AddToCartBodyError, addToCartService } from "@src/services/cart/addToCa
 import { EmptyCart, ICartData, getCartService } from "@src/services/cart/getCartItems";
 import { UnauthorizedError } from "@src/services/errors";
 import { updateCart, updateCartItem } from "@src/store/slices/cartItems";
+import FormError from "@src/Components/Common/FormError";
 
 
 
@@ -50,7 +51,7 @@ const CartScreen: React.FC<NativeStackScreenProps<ShopStackParamList, "cart">> =
                 setLoading(false);
                 if (result instanceof EmptyCart) {
                     // toast("no cart items")
-                    setError("no cart items")
+                    setError("No cart items")
                     return
                 }
 
@@ -129,6 +130,8 @@ const CartScreen: React.FC<NativeStackScreenProps<ShopStackParamList, "cart">> =
 
             <GoBackButton onPress={handlePress} />
 
+            <FormError errorMessage={error} type="Form" style={styles.error} />
+
             {cartData &&
 
                 <>
@@ -167,6 +170,10 @@ const styles = StyleSheet.create({
 
     bold: {
         fontWeight: "700"
+    },
+
+    error: {
+        fontSize: 22
     },
 
     horizontalRule: {
