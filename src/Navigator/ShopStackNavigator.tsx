@@ -11,7 +11,7 @@ const shopStackNavigator = createNativeStackNavigator<ShopStackParamList>();
 const ShopStackNavigator: React.FC<BottomTabScreenProps<MainTabStackParamList, "shop">> =
     ({ route: routeProp, navigation }) => {
         return (
-            <shopStackNavigator.Navigator initialRouteName={route.shop.cart}>
+            <shopStackNavigator.Navigator initialRouteName={route.shop.cart} screenOptions={{ headerShown: false }}>
                 <shopStackNavigator.Screen name={route.shop.cart} component={CartScreen} />
                 <shopStackNavigator.Screen name={route.shop.checkout} component={CheckoutScreen} />
             </shopStackNavigator.Navigator>
