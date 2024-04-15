@@ -11,7 +11,7 @@ const invoiceStackNavigator = createNativeStackNavigator<InvoiceStackParamList>(
 const InvoiceStackNavigator: React.FC<BottomTabScreenProps<MainTabStackParamList, "invoices">> =
     ({ route: routeProp }) => {
         return (
-            <invoiceStackNavigator.Navigator initialRouteName={route.invoices.list}>
+            <invoiceStackNavigator.Navigator initialRouteName={route.invoices.list} screenOptions={{ headerShown: false }}>
                 <invoiceStackNavigator.Screen name={route.invoices.list} component={InvoiceListScreen} />
                 <invoiceStackNavigator.Screen name={route.invoices.detail} component={InvoiceDetailScreen} />
             </invoiceStackNavigator.Navigator>
