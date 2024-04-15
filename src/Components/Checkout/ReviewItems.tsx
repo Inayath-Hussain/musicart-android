@@ -7,14 +7,18 @@ import { colors } from "@src/config/color";
 
 
 interface Iprops {
-    data: ICartData["data"]
+    data: {
+        name: string
+        color: string
+        image: string
+    }[]
 }
 
 const ReviewItems: React.FC<Iprops> = ({ data }) => {
 
-    const [selectedItem, setSelectedItem] = useState(data[0].product_id);
+    const [selectedItem, setSelectedItem] = useState(data[0].image);
 
-    const productInfo = data.find(d => d.product_id === selectedItem);
+    const productInfo = data.find(d => d.image === selectedItem);
 
     data.forEach(d => console.log(d.image))
 
@@ -22,7 +26,7 @@ const ReviewItems: React.FC<Iprops> = ({ data }) => {
         <>
             <View style={styles.imagesContainer}>
                 {data.map(d => (
-                    <TouchableWithoutFeedback onPress={() => setSelectedItem(d.product_id)}>
+                    <TouchableWithoutFeedback onPress={() => setSelectedItem(d.image)} key={d.image}>
                         <Image src={d.image} style={styles.image} />
                     </TouchableWithoutFeedback>
                 ))}
